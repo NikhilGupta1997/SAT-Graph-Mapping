@@ -59,20 +59,8 @@ int main(int argc, char *argv[]){
 	vector<int> nodes1;
 	vector<int> nodes2;
 	while(!input.eof()){
-		cout<<"Reading "<<line<<endl;
 		edge temp = extractNumbers(line);
 		cout<<temp.start<<endl<<temp.end<<endl;
-		cout<<"node1 ";
-		for(int i=0; i<nodes1.size(); i++){
-			cout<< nodes1[i]<<" ";
-		}
-		cout<<endl;
-
-		cout<<"node2 ";
-		for(int i=0; i<nodes2.size(); i++){
-			cout<< nodes2[i]<<" ";
-		}
-		cout<<endl;
 
 		if(temp.start==0 && temp.end==0)
 		{
@@ -114,34 +102,30 @@ int main(int argc, char *argv[]){
 
     int count = 1;
     for(int i=1; i<=n; i++){
-    	cout<<"First"<<endl;
     	for(int j=1; j<=n; j++){
-    		cout<<"First1"<<endl;
     		if(phind(G1, i, j)){
-    			output<<"1"<<count<< " 0\n";
+    			output<<count<< " 0\n";
     		}
     		else
-    			output<<"-1"<<count<< " 0\n";
+    			output<<"-"<<count<< " 0\n";
     		count++; 
     	}
     }
-    count = 1;
+    int end_count1 = count;
     for(int i=1; i<=m; i++){
     	for(int j=1; j<=m; j++){
-    		cout<<"Second"<<endl;
     		if(phind(G2, i, j)){
-    			output<<"2"<<count<< " 0\n";
+    			output<<to_string(count)<< " 0\n";
     		}
     		else
-    			output<<"-2"<<count<< " 0\n";
+    			output<<"-"<<to_string(count)<< " 0\n";
     		count++; 
     	}
     }
-    count = 1;
+    int end_count2 = count;
     for(int i=1; i<=m; i++){
     	for(int j=1; j<=n; j++){
-    		cout<<"Third"<<endl;
-    		output<<"3"<<count<<" ";
+    		output<<to_string(count)<<" ";
     		count++;
     	}
     	output<<"0\n";
@@ -150,7 +134,6 @@ int main(int argc, char *argv[]){
     	for(int j=1; j<=m; j++){
     		for(int k=1; k<=n; k++){
     			for(int l=1; l<=m; l++){
-    				cout<<"Fourth"<<endl;
     				if(i==k && j==l)
     					continue;
     				else if(j>l)
@@ -158,10 +141,10 @@ int main(int argc, char *argv[]){
     				else if(j==l && i>k)
     					continue;
     				else{
-    					output<<"-3"<<(j-1)*n + i<<" -3"<<(l-1)*n + k<<" -1"<<(i-1)*n+k<<" 2"<<(j-1)*m + l<< " 0\n";
-    					output<<"-3"<<(j-1)*n + i<<" -3"<<(l-1)*n + k<<" -1"<<(k-1)*n+i<<" 2"<<(l-1)*m + j<< " 0\n";
-    					output<<"-3"<<(j-1)*n + i<<" -3"<<(l-1)*n + k<<" -2"<<(j-1)*m+l<<" 1"<<(i-1)*n + k<< " 0\n";
-    					output<<"-3"<<(j-1)*n + i<<" -3"<<(l-1)*n + k<<" -2"<<(l-1)*m+j<<" 1"<<(k-1)*n + i<< " 0\n";
+    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((i-1)*n+k)<<" "<<to_string((j-1)*m+l+end_count1)<< " 0\n";
+    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((k-1)*n+i)<<" "<<to_string((l-1)*m+j+end_count1)<< " 0\n";
+    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((j-1)*m+l+end_count1)<<" "<<to_string((i-1)*n+k)<< " 0\n";
+    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((l-1)*m+j+end_count1)<<" "<<to_string((k-1)*n+i)<< " 0\n";
     				}
     			}
     		}

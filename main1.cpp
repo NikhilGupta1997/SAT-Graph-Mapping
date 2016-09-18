@@ -4,7 +4,72 @@
 #include <fstream>
 #include <stdio.h>
 
+#define max 65536
+
 using namespace std;
+
+class Graph
+{
+public:
+	struct node
+	{
+		int index;
+		int indeg;
+		int outdeg;
+		node(int a)
+		{
+			index = a;
+			indeg = 0;
+			outdeg = 0;
+		}
+	};
+	vector<node*> nodelist;
+	vector<node*> *adjlist;
+
+	Graph()
+	{
+		adjlist = new vector<node*>[max];
+	}
+
+	node* findnode(int a)
+	{
+		int nsize = nodelist.size();
+		int i;
+		for (i=0; i<nsize; i++)
+		{
+			if (nodelist[i]->index==a)
+				return nodelist[i];
+		}
+		return NULL; ///// return nsize if node does not exist
+	}
+
+	void addnode(int a)
+	{
+		if (findnode(a)==NULL)
+		{
+			node* newnode = new node(a);
+			nodelist.push_back(newnode);
+		}
+	}
+
+	void addEdge(int u, int v)
+	{
+		adjlist[u].push_back(findnode(v));
+		findnode(u)->outdeg++;
+		findnode(v)->indeg++;
+	}
+
+	bool findedge(int u, int v)
+	{
+		int usize = adjlist[u].size();
+		for (int i=0; i<usize; i++)
+		{
+			if (adjlist[u][i]->index == v)
+				return true;
+		}
+		return false;
+	}
+};
 
 struct edge{
 	int start;

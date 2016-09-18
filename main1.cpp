@@ -8,10 +8,7 @@
 
 using namespace std;
 
-class Graph
-{
-public:
-	struct node
+struct node
 	{
 		int index;
 		int indeg;
@@ -23,6 +20,11 @@ public:
 			outdeg = 0;
 		}
 	};
+
+class Graph
+{
+public:
+	
 	vector<node*> nodelist;
 	vector<node*> *adjlist;
 
@@ -69,7 +71,7 @@ public:
 		}
 		return false;
 	}
-};
+}G1, G2;
 
 struct edge{
 	int start;
@@ -101,15 +103,6 @@ edge extractNumbers(string str){
 	return v;
 }
 
-int phind(vector<edge> G, int x, int y){
-	int gsize = G.size();
-	for(int i=0; i<gsize; i++){
-		if(G[i].start == x && G[i].end == y)
-			return 1;
-	}
-	return 0;
-}
-
 int main(int argc, char *argv[]){
 	ifstream input(argv[1]);
 	ofstream output;
@@ -119,13 +112,9 @@ int main(int argc, char *argv[]){
 	int m = 0;
 	int flag = 0;
 	getline(input,line);
-	vector<edge> G1;
-	vector<edge> G2;
-	vector<int> nodes1;
-	vector<int> nodes2;
+
 	while(!input.eof()){
 		edge temp = extractNumbers(line);
-		cout<<temp.start<<endl<<temp.end<<endl;
 
 		if(temp.start==0 && temp.end==0)
 		{
@@ -135,51 +124,110 @@ int main(int argc, char *argv[]){
 		{	
 			if(flag == 0) ////// G
 			{
-				G1.push_back(temp);
-				if(std::find(nodes1.begin(), nodes1.end(), temp.start) == nodes1.end()){
-					nodes1.push_back(temp.start);
+				if(G1.findnode(temp.start) == NULL){
 					n++;
+					G1.addnode(temp.start);
 				}
-				if(std::find(nodes1.begin(), nodes1.end(), temp.end) == nodes1.end()){
-					nodes1.push_back(temp.end);
+				if(G1.findnode(temp.end) == NULL){
 					n++;
+					G1.addnode(temp.end);
 				}
+				G1.addEdge(temp.start, temp.end);
 			}
 			else //////// G'
 			{
-				G2.push_back(temp);
-				if(std::find(nodes2.begin(), nodes2.end(), temp.start) == nodes2.end()){
-					nodes2.push_back(temp.start);
+				if(G2.findnode(temp.start) == NULL){
 					m++;
+					G2.addnode(temp.start);
 				}
-				if(std::find(nodes2.begin(), nodes2.end(), temp.end) == nodes2.end()){
-					nodes2.push_back(temp.end);
+				if(G2.findnode(temp.end) == NULL){
 					m++;
+					G2.addnode(temp.end);
 				}
+				G2.addEdge(temp.start, temp.end);
 			}
 		}
 		getline(input,line);
 	}
 
+	int matrix[m][n];
+	int G1_in;
+	int G2_in;
+	int G1_out;
+	int G2_out;
+	int G1_index;
+	int G2_index;
+	int zero_count = 0;
+
+	for(int i=0; i<m; i++){
+		for(int j=0; j<n; j++){
+			G1_index = G1.nodelist[j]->index;
+			G2_index = G2.nodelist[i]->index;
+			G1_in = G1.nodelist[j]->indeg;
+			G2_in = G2.nodelist[i]->indeg;
+			G1_out = G1.nodelist[j]->outdeg;
+			G2_out = G2.nodelist[i]->outdeg;
+			if(G2_in>G1_in || G2_out>G1_out){
+				matrix[G2_index-1][G1_index-1] = 0;
+				zero_count++;
+				cout<<zero_count<<endl;
+			}
+			else	
+				matrix[G2_index-1][G1_index-1] = 1;
+		}
+	}
+
+	for(int i=0; i<m; i++){
+		// cout<<"i = "<<i<<endl;
+		for(int j=0; j<n; j++){
+			// cout<<"j = "<<j<<endl;
+			vector<node*> G2_node_list = G2.adjlist[i+1];
+			int G2_size=G2_node_list.size();
+			// cout<<"G2_size = "<<G2_size;
+			vector<node*> G1_node_list = G1.adjlist[j+1];
+			int G1_size=G1_node_list.size();
+			// cout<<"G1_size = "<<G1_size;
+			for(int k=0; k<G2_size; k++){
+				// cout<<"k = "<<k<<endl;
+				int flag = 0;
+				for(int l=0; l<G1_size; l++){
+					// cout<<"l = "<<l<<endl;
+					int index2 = G2_node_list[k]->index;
+					int index1 = G1_node_list[l]->index;
+					if(matrix[index2-1][index1-1] == 1){
+						flag = 1;
+						break;
+					}
+				}
+				if(flag == 0){
+					matrix[i][j] = 0;
+					zero_count++;
+					cout<<"************************************************************"<<zero_count<<endl;
+					break;
+				}
+			}
+		}
+	}
+
 	int no_of_vars = n*n + m*m + n*m;
-	int no_of_clauses = n*n + m*m + m + 2*(n*m*(n*m-1));
+	int no_of_clauses = n*n + m*m + m + 2*((n*m-zero_count)*(n*m-1-zero_count)) + zero_count;
 	output<<"p cnf "<<no_of_vars<<" "<<no_of_clauses<<endl;
 
     int count = 1;
     for(int i=1; i<=n; i++){
     	for(int j=1; j<=n; j++){
-    		if(phind(G1, i, j)){
-    			output<<count<< " 0\n";
+    		if(G1.findedge(i, j)){
+    			output<<to_string(count)<< " 0\n";
     		}
     		else
-    			output<<"-"<<count<< " 0\n";
+    			output<<"-"<<to_string(count)<< " 0\n";
     		count++; 
     	}
     }
     int end_count1 = count;
     for(int i=1; i<=m; i++){
     	for(int j=1; j<=m; j++){
-    		if(phind(G2, i, j)){
+    		if(G2.findedge(i, j)){
     			output<<to_string(count)<< " 0\n";
     		}
     		else
@@ -195,6 +243,15 @@ int main(int argc, char *argv[]){
     	}
     	output<<"0\n";
     }
+
+	for(int i=1; i<=m; i++){
+    	for(int j=1; j<=n; j++){
+    		if(matrix[i-1][j-1]==0){
+    			output<<"-"<<to_string((i-1)*n+j+end_count2)<< " 0\n";
+    		}
+    	}
+    }
+
     for(int i=1; i<=n; i++){
     	for(int j=1; j<=m; j++){
     		for(int k=1; k<=n; k++){
@@ -204,6 +261,12 @@ int main(int argc, char *argv[]){
     				else if(j>l)
     					continue;
     				else if(j==l && i>k)
+    					continue;
+    				else if(matrix[j-1][i-1] == 0 || matrix[l-1][k-1] == 0)
+    					continue;
+    				else if(!G1.findedge(i,k))
+    					continue;
+    				else if(!G2.findedge(j,l))
     					continue;
     				else{
     					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((i-1)*n+k)<<" "<<to_string((j-1)*m+l+end_count1)<< " 0\n";

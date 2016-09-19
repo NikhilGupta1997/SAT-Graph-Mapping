@@ -150,6 +150,9 @@ int main(int argc, char *argv[]){
 		getline(input,line);
 	}
 
+	cout<<G2.nodelist.size()<<endl;
+	cout<<G2.nodelist[0]->index<<endl;
+	cout<<G2.nodelist[1]->index<<endl;
 	int matrix[m][n];
 	int G1_in;
 	int G2_in;
@@ -177,64 +180,14 @@ int main(int argc, char *argv[]){
 		}
 	}
 
-	// for(int i=0; i<m; i++){
-	// 	// cout<<"i = "<<i<<endl;
-	// 	for(int j=0; j<n; j++){
-	// 		// cout<<"j = "<<j<<endl;
-	// 		vector<node*> G2_node_list = G2.adjlist[i+1];
-	// 		int G2_size=G2_node_list.size();
-	// 		// cout<<"G2_size = "<<G2_size;
-	// 		vector<node*> G1_node_list = G1.adjlist[j+1];
-	// 		int G1_size=G1_node_list.size();
-	// 		// cout<<"G1_size = "<<G1_size;
-	// 		for(int k=0; k<G2_size; k++){
-	// 			// cout<<"k = "<<k<<endl;
-	// 			int flag = 0;
-	// 			for(int l=0; l<G1_size; l++){
-	// 				// cout<<"l = "<<l<<endl;
-	// 				int index2 = G2_node_list[k]->index;
-	// 				int index1 = G1_node_list[l]->index;
-	// 				if(matrix[index2-1][index1-1] == 1){
-	// 					flag = 1;
-	// 					break;
-	// 				}
-	// 			}
-	// 			if(flag == 0){
-	// 				matrix[i][j] = 0;
-	// 				zero_count++;
-	// 				cout<<"************************************************************"<<zero_count<<endl;
-	// 				break;
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	int no_of_vars = n*n + m*m + n*m;
 	int no_of_clauses = n*n + m*m + m + 2*((n*m-zero_count)*(n*m-1-zero_count)) + zero_count;
 	// output<<"p cnf "<<no_of_vars<<" "<<no_of_clauses<<endl;
     int count = 1;
-    // for(int i=1; i<=n; i++){
-    // 	for(int j=1; j<=n; j++){
-    // 		if(G1.findedge(i, j)){
-    // 			output<<to_string(count)<< " 0\n";
-    // 		}
-    // 		else
-    // 			output<<"-"<<to_string(count)<< " 0\n";
-    // 		count++; 
-    // 	}
-    // }
-    // int end_count1 = count-1;
-    // for(int i=1; i<=m; i++){
-    // 	for(int j=1; j<=m; j++){
-    // 		if(G2.findedge(i, j)){
-    // 			output<<to_string(count)<< " 0\n";
-    // 		}
-    // 		else
-    // 			output<<"-"<<to_string(count)<< " 0\n";
-    // 		count++; 
-    // 	}
-    // }
-    int end_count2 = count-1;
+
+    cout<<"M size = "<<m<<endl;
+    cout<<"N size = "<<n<<endl;
+
     for(int i=1; i<=m; i++){
     	for(int j=1; j<=n; j++){
     		output<<to_string(count)<<" ";
@@ -246,7 +199,7 @@ int main(int argc, char *argv[]){
 	for(int i=1; i<=m; i++){
     	for(int j=1; j<=n; j++){
     		if(matrix[i-1][j-1]==0){
-    			output<<"-"<<to_string((i-1)*n+j+end_count2)<< " 0\n";
+    			output<<"-"<<to_string((i-1)*n+j)<< " 0\n";
     		}
     	}
     }
@@ -265,13 +218,13 @@ int main(int argc, char *argv[]){
     					continue;
     				else{
     					if(G1.findedge(i,k) && !G2.findedge(j,l))
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
+	    					output<<"-"<<to_string((j-1)*n+i)<<" -"<<to_string((l-1)*n+k)<<" 0\n";
 	    				if(G1.findedge(k,i) && !G2.findedge(l,j))	
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
+	    					output<<"-"<<to_string((j-1)*n+i)<<" -"<<to_string((l-1)*n+k)<<" 0\n";
 						if(G2.findedge(j,l) && !G1.findedge(i,k))
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
+	    					output<<"-"<<to_string((j-1)*n+i)<<" -"<<to_string((l-1)*n+k)<<" 0\n";
 	    				if(G2.findedge(l,j) && !G1.findedge(k,i))
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
+	    					output<<"-"<<to_string((j-1)*n+i)<<" -"<<to_string((l-1)*n+k)<<" 0\n";
     				}
     			}
     		}

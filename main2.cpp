@@ -123,6 +123,10 @@ int main(int argc, char *argv[]){
 	output.open(argv[3]);
 	string line, nodes;
 	getline(input,line);
+	if(line == "UNSAT"){
+		output<<"0"<<endl;
+		return 0;
+	}
 	getline(input,line);
 	getline(graph,nodes);
 
@@ -179,7 +183,9 @@ int main(int argc, char *argv[]){
 				m_val = m_val-1;
 				n_val = n_size;
 			}
-			cout<<m_val<<" "<<n_val<<endl;
+			m_val--;
+			n_val--;
+			output<<G2.nodelist[m_val]->index<<" "<<G1.nodelist[n_val]->index<<endl;
 		}
 	}
 

@@ -213,27 +213,27 @@ int main(int argc, char *argv[]){
 	int no_of_clauses = n*n + m*m + m + 2*((n*m-zero_count)*(n*m-1-zero_count)) + zero_count;
 	// output<<"p cnf "<<no_of_vars<<" "<<no_of_clauses<<endl;
     int count = 1;
-    for(int i=1; i<=n; i++){
-    	for(int j=1; j<=n; j++){
-    		if(G1.findedge(i, j)){
-    			output<<to_string(count)<< " 0\n";
-    		}
-    		else
-    			output<<"-"<<to_string(count)<< " 0\n";
-    		count++; 
-    	}
-    }
-    int end_count1 = count-1;
-    for(int i=1; i<=m; i++){
-    	for(int j=1; j<=m; j++){
-    		if(G2.findedge(i, j)){
-    			output<<to_string(count)<< " 0\n";
-    		}
-    		else
-    			output<<"-"<<to_string(count)<< " 0\n";
-    		count++; 
-    	}
-    }
+    // for(int i=1; i<=n; i++){
+    // 	for(int j=1; j<=n; j++){
+    // 		if(G1.findedge(i, j)){
+    // 			output<<to_string(count)<< " 0\n";
+    // 		}
+    // 		else
+    // 			output<<"-"<<to_string(count)<< " 0\n";
+    // 		count++; 
+    // 	}
+    // }
+    // int end_count1 = count-1;
+    // for(int i=1; i<=m; i++){
+    // 	for(int j=1; j<=m; j++){
+    // 		if(G2.findedge(i, j)){
+    // 			output<<to_string(count)<< " 0\n";
+    // 		}
+    // 		else
+    // 			output<<"-"<<to_string(count)<< " 0\n";
+    // 		count++; 
+    // 	}
+    // }
     int end_count2 = count-1;
     for(int i=1; i<=m; i++){
     	for(int j=1; j<=n; j++){
@@ -264,14 +264,14 @@ int main(int argc, char *argv[]){
     				else if(matrix[j-1][i-1] == 0 || matrix[l-1][k-1] == 0)
     					continue;
     				else{
-    					if(G1.findedge(i,k))
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((i-1)*n+k)<<" "<<to_string((j-1)*m+l+end_count1)<< " 0\n";
-	    				if(G1.findedge(k,i))	
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((k-1)*n+i)<<" "<<to_string((l-1)*m+j+end_count1)<< " 0\n";
-						if(G2.findedge(j,l))
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((j-1)*m+l+end_count1)<<" "<<to_string((i-1)*n+k)<< " 0\n";
-	    				if(G2.findedge(l,j))
-	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" -"<<to_string((l-1)*m+j+end_count1)<<" "<<to_string((k-1)*n+i)<< " 0\n";
+    					if(G1.findedge(i,k) && !G2.findedge(j,l))
+	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
+	    				if(G1.findedge(k,i) && !G2.findedge(l,j))	
+	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
+						if(G2.findedge(j,l) && !G1.findedge(i,k))
+	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
+	    				if(G2.findedge(l,j) && !G1.findedge(k,i))
+	    					output<<"-"<<to_string((j-1)*n+i+end_count2)<<" -"<<to_string((l-1)*n+k+end_count2)<<" 0\n";
     				}
     			}
     		}

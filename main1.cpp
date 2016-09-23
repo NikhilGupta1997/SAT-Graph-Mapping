@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 #include <fstream>
 #include <stdio.h>
 
@@ -27,10 +28,12 @@ public:
 	
 	vector<node*> nodelist;
 	vector<node*> *adjlist;
+	vector<node*> *inlist;
 
 	Graph()
 	{
 		adjlist = new vector<node*>[max];
+		inlist = new vector<node*>[max];
 	}
 
 	node* findnode(int a)
@@ -57,6 +60,7 @@ public:
 	void addEdge(int u, int v)
 	{
 		adjlist[u].push_back(findnode(v));
+		inlist[v].push_back(findnode(u));
 		findnode(u)->outdeg++;
 		findnode(v)->indeg++;
 	}
@@ -101,6 +105,15 @@ edge extractNumbers(string str){
 		}
 	}
 	return v;
+}
+int find_index(Graph G, int index){
+	int size = G.nodelist.size();
+	for(int i=0; i<size; i++){
+		if (G.nodelist[i]->index == index){
+			return i;
+		}
+	}
+	return -1;
 }
 
 int main(int argc, char *argv[]){
@@ -173,20 +186,84 @@ int main(int argc, char *argv[]){
 				matrix[i][j] = 1;
 		}
 	}
-
-	int no_of_vars = n*n + m*m + n*m;
-	int no_of_clauses = n*n + m*m + m + 2*((n*m-zero_count)*(n*m-1-zero_count)) + zero_count;
-	// output<<"p cnf "<<no_of_vars<<" "<<no_of_clauses<<endl;
+	
     int count = 1;
 
     for(int i=1; i<=m; i++){
     	for(int j=1; j<=n; j++){
-    		output<<to_string(count)<<" ";
+    		if (matrix[i-1][j-1]!=0)
+    			output<<to_string(count)<<" ";
     		count++;
     	}
     	output<<"0\n";
     }
 
+    node* find1; node* find2;
+    int index1,index2,indextemp2,indextemp1,ind1,ind2;
+
+    int loopCount = 3;
+    while(loopCount>0)
+	{
+		time_t start = time(0);
+		for(int i=0; i<m; i++){
+	 		for(int j=0; j<n; j++){
+	 			if(matrix[i][j])
+	 			{
+	 				find1 = G1.nodelist[j];
+		 			index1 = find1->index;
+		 			find2 = G2.nodelist[i];
+		 			index2 = find2->index;
+					vector<node*> G2_out_nodes = G2.adjlist[index2];
+		 			int G2_size=G2_out_nodes.size();
+		 			vector<node*> G1_out_nodes = G1.adjlist[index1];
+		 			int G1_size=G1_out_nodes.size();
+		 			for(int k=0; k<G2_size; k++){
+		 				bool flag = 0;
+		 				indextemp2 = G2_out_nodes[k]->index;
+		 				ind2 = find_index(G2, indextemp2);
+		 				for(int l=0; l<G1_size; l++){
+		 					indextemp1 = G1_out_nodes[l]->index;
+		 					ind1 = find_index(G1, indextemp1);
+		 					if(matrix[ind2][ind1] == 1){
+		 						flag = 1;
+		 						break;
+		 					}
+		 				}
+		 				if(flag == 0){
+		 					matrix[i][j] = 0;
+		 					break;
+		 				}
+		 			}
+		 			vector<node*> G2_in_nodes = G2.inlist[index2];
+		 			int G2_insize=G2_in_nodes.size();
+		 			vector<node*> G1_in_nodes = G1.inlist[index1];
+		 			int G1_insize=G1_in_nodes.size();
+		 			for(int k=0; k<G2_insize; k++){
+		 				bool flag = 0;
+		 				indextemp2 = G2_in_nodes[k]->index;
+		 				ind2 = find_index(G2, indextemp2);
+		 				for(int l=0; l<G1_insize; l++){
+		 					indextemp1 = G1_in_nodes[l]->index;
+		 					ind1 = find_index(G1, indextemp1);
+		 					if(matrix[ind2][ind1] == 1){
+		 						flag = 1;
+		 						break;
+		 					}
+		 				}
+		 				if(flag == 0){
+		 					matrix[i][j] = 0;
+		 					break;
+		 				}
+		 			}
+	 			}
+	 		}
+	 	}
+	 	time_t finish = time(0);
+	 	cout<<"time: "<<(finish-start)<<endl;
+	 	loopCount--;
+	 }
+
+	time_t writestart = time(0);
 	for(int i=1; i<=m; i++){
     	for(int j=1; j<=n; j++){
     		if(matrix[i-1][j-1]==0){
@@ -222,5 +299,7 @@ int main(int argc, char *argv[]){
     	}
     }
     output.close();
+    time_t writefin = time(0);
+    cout<<"write time: "<<(writefin-writestart)<<endl;
     return 0;
 }
